@@ -17,7 +17,7 @@ jobs:
         include:
           - os: windows-latest
             artifact_name: MetaParser.zip
-            asset_name: metaparser-windows-amd64
+            asset_name: metaparser-windows-amd64.zip
 
     steps:
     - uses: actions/checkout@v3
