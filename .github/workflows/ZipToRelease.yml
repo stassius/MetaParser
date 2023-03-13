@@ -1,12 +1,27 @@
-name: Create Archive
-on: [push]
+---
+name: "pre-release"
+
+on:
+  push:
+    branches:
+      - "master"
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  pre-release:
+    name: "Pre Release"
+    runs-on: "ubuntu-latest"
+
     steps:
-    - uses: actions/checkout@master
-    - name: Upload Release
-      uses: ncipollo/release-action@v1.12.0
-      with:
-        artifacts: "MetaParser.zip"
-        token: ${{ secrets.GITHUB_TOKEN }}
+      # ...
+      - name: "Build & test"
+        run: |
+          echo "done!"
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            MetaParser.zip
