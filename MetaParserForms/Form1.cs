@@ -14,11 +14,13 @@ namespace MetaParserForms
         protected static string CurrentFile;
         public Form1()
         {
+
             InitializeComponent();
             TopMost = true;
             KeyPreview = true;
             dataGridView1.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.ShowCellToolTips = false;
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
