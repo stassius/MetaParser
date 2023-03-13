@@ -10,17 +10,14 @@ jobs:
   tagged-release:
     name: "Tagged Release"
     runs-on: "ubuntu-latest"
-    permissions: write-all
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       # ...
-      - name: "Build & test"
-        run: |
-          echo "done!"
-
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Upload Release
+        uses: ncipollo/release-action@v1.12.0
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
-          files: |
-            MetaParser.zip
+          artifacts: "release.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}  
