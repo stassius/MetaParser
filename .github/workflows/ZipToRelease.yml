@@ -9,6 +9,7 @@ on:
 
 jobs:
   publish:
+    permissions: write-all
     name: Publish for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
