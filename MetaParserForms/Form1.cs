@@ -38,12 +38,12 @@ namespace MetaParserForms
             L_copy.SendToBack();
         }
 
-        void Form1_DragEnter(object sender, DragEventArgs e)
+        private void Form1_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
         }
 
-        void Form1_DragDrop(object sender, DragEventArgs e)
+        private void Form1_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             CurrentFile = files[0];
@@ -122,19 +122,17 @@ namespace MetaParserForms
                 Application.Exit();
             }
         }
-
-
           
-        private bool CurrentlyFlashing = false;
+        private bool _currentlyFlashing = false;
         private async void ShowLabel(Label label)
         {
-            if (CurrentlyFlashing) return;
+            if (_currentlyFlashing) return;
             float duration = 250; // milliseconds
-            CurrentlyFlashing = true;
+            _currentlyFlashing = true;
             label.BringToFront();
             await Task.Delay((int)duration);
             label.SendToBack();
-            CurrentlyFlashing = false;
+            _currentlyFlashing = false;
         }
 
     }

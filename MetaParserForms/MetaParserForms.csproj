@@ -6,10 +6,36 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon />
     <StartupObject />
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <PackageId>MetaParser</PackageId>
+    <Authors>Stanislav Demchenko</Authors>
+    <Company>Bereg Software</Company>
+    <Product>MetaParser</Product>
+    <Description>MetaParser parses metadata in images generated with Stable Diffusion Automatic1111 webui.</Description>
+    <AssemblyName>MetaParser</AssemblyName>
+    <RootNamespace>MetaParser</RootNamespace>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>D:\My\_MetaParserForms\MetaParser\BUILD\</OutputPath>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+<PropertyGroup>
+     <!-- 
+     Turns off reference assembly generation 
+     See: https://learn.microsoft.com/en-us/dotnet/standard/assembly/reference-assemblies
+     -->
+     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.7.2" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call &quot;$(SolutionDir)zip.bat&quot; &quot;$(TargetDir)&quot; &quot;$(SolutionDir)MetaParser.zip&quot;" />
+  </Target>
 
 </Project>
