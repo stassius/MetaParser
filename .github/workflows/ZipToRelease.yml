@@ -10,6 +10,7 @@ jobs:
   tagged-release:
     name: "Tagged Release"
     runs-on: "ubuntu-latest"
+    permissions: write-all
 
     steps:
       # ...
