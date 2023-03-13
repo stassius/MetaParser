@@ -1,17 +1,11 @@
 ﻿using MetadataExtractor;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Media;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Tulpep.NotificationWindow;
 
 namespace MetaParserForms
 {
@@ -41,6 +35,7 @@ namespace MetaParserForms
                     Parse();
                 }
             }
+            L_copy.SendToBack();
         }
 
         void Form1_DragEnter(object sender, DragEventArgs e)
@@ -77,16 +72,26 @@ namespace MetaParserForms
             }
             else
             {
-                 prompt = GetInbetweenString(tag.Description.ToLower(), "parameters:", "Steps:").Trim();
-                 negPrompt = string.Empty ;
+                 prompt = GetInbetweenString(tag.Description, "parameters:", "Steps:").Trim();
+                negPrompt = " "; 
             }
             dataGridView1.Rows.Add("Prompt", prompt);
-            dataGridView1.Rows.Add("Neg prompt", negPrompt);
+            dataGridView1.Rows.Add("Negative prompt", negPrompt);
 
             string rest = tag.Description.Substring(tag.Description.IndexOf("Steps:"));
             foreach(string unit in rest.Split(","))
             {
-                dataGridView1.Rows.Add(unit.Split(":")[0].Trim(), unit.Split(":")[1].Trim());
+                var argName = unit.Split(":")[0].Trim();
+                var value = unit.Split(":")[1].Trim();
+                if (argName == "Size")
+                {
+                    dataGridView1.Rows.Add("Width", value.Split("x")[0]);
+                    dataGridView1.Rows.Add("Height", value.Split("x")[1]);
+                }
+                else
+                {
+                    dataGridView1.Rows.Add(argName, value);
+                }
             }
         }
 
@@ -99,21 +104,15 @@ namespace MetaParserForms
         }
      
 
-        private void button2_Click_1(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            DialogResult result = openFileDialog1.ShowDialog(); // Show the dialog.
-            if (result == DialogResult.OK) // Test result.
-            {
-                CurrentFile = openFileDialog1.FileName;
-                Parse();
-            }
-        }
-
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            string result = dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
+            var cell = dataGridView1.Rows[e.RowIndex].Cells[1];
+            string result = string.Empty;
+            if (cell !=null)
+                result = cell.Value.ToString();
+
             Clipboard.SetText(result);
+            ShowLabel(L_copy);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -127,43 +126,17 @@ namespace MetaParserForms
 
           
         private bool CurrentlyFlashing = false;
-        private async void FlashControl(DataGridViewRow control)
+        private async void ShowLabel(Label label)
         {
-            
-            Color flashColor = Color.Green;
-
-            float duration = 100; // milliseconds
-            int steps = 2;
-            float interval = duration / steps;
-
             if (CurrentlyFlashing) return;
+            float duration = 250; // milliseconds
             CurrentlyFlashing = true;
-            Color original = control.DefaultCellStyle.BackColor;
-
-            float interpolant = 0.0f;
-            while (interpolant < 1.0f)
-            {
-                control.Selected = !control.Selected;
-                //Color c = InterpolateColour(flashColor, original, interpolant);
-                //control.DefaultCellStyle.BackColor = c;
-                await Task.Delay((int)interval);
-                interpolant += (1.0f / steps);
-            }
-
-           // control.DefaultCellStyle.BackColor = original;
-
+            label.BringToFront();
+            await Task.Delay((int)duration);
+            label.SendToBack();
             CurrentlyFlashing = false;
         }
 
-        public static Color InterpolateColour(Color c1, Color c2, float alpha)
-        {
-            float oneMinusAlpha = 1.0f - alpha;
-            float a = oneMinusAlpha * (float)c1.A + alpha * (float)c2.A;
-            float r = oneMinusAlpha * (float)c1.R + alpha * (float)c2.R;
-            float g = oneMinusAlpha * (float)c1.G + alpha * (float)c2.G;
-            float b = oneMinusAlpha * (float)c1.B + alpha * (float)c2.B;
-            return Color.FromArgb((int)a, (int)r, (int)g, (int)b);
-        }
     }
 }
 
