@@ -14,6 +14,7 @@ namespace MetaParserForms
         protected static string CurrentFile;
         public Form1()
         {
+            //aaa
             InitializeComponent();
             TopMost = true;
             KeyPreview = true;
