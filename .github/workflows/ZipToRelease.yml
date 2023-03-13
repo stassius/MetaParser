@@ -5,9 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Archive Release
-      uses: thedoctor0/zip-release@0.7.1
+    - name: Upload Release
+      uses: ncipollo/release-action@v1.12.0
       with:
-        type: 'zip'
-        filename: 'MetaParser.zip'
-        exclusions: '*.git* /*node_modules/* .editorconfig'
+        artifacts: "MetaParser.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
