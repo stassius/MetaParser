@@ -4,9 +4,12 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - "master"
 
 jobs:
   publish:
+    permissions: write-all
     name: Publish for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -14,12 +17,10 @@ jobs:
         include:
           - os: windows-latest
             artifact_name: MetaParser.zip
-            asset_name: metaparser-windows-amd64
+            asset_name: metaparser-windows-amd64.zip
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --release --locked
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
