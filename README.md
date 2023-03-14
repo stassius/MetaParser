@@ -12,9 +12,9 @@ The app remembers the last screen position and size. If something went wrong and
 
 You can set up colors in the `app.cfg` file. If something went wrong, delete this file. Also in the app.cfg you can set if the multiple instances of the app is allowed to be opened by changing `true` to `false` here: `<SingleInstance>true</SingleInstance>`.
 
-Configure your favourite image viewer to run the MetaParser as the external app like FastStone ImageViewer.
+Configure your favourite image viewer like FastStone ImageViewer to run the MetaParser as the external app.
 
-Or use AutoHotkey application with script like this to run it from any explorer:
+Or you can use AutoHotkey application with script like this to run it from any explorer:
 ```
 ^g:: ; ctrl+g
 Clipboard =
