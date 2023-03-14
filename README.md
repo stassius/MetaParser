@@ -4,11 +4,13 @@ You can drag and drop an image to the MetaParser or start the app with the name 
 
 ![image](https://user-images.githubusercontent.com/35260274/225069254-02c4fc19-3b08-431b-b7e6-6ea7d006790e.png)
 
-### Click on a row -> copy to clipboard.
+Installation: Unzip and run.
 
-### Escape -> Close the application.
+Click on a row -> copy to clipboard.
 
-The app remembers the last screen position and size. If something went wrong and the app is off-screen, delete the `window.cfg` file and restart the file.
+Escape -> Close the application.
+
+The app remembers the last screen position and size. If something went wrong and the app is off-screen, delete the `window.cfg` file and restart the app.
 
 You can set up colors in the `app.cfg` file. If something went wrong, delete this file. Also in the app.cfg you can set if the multiple instances of the app is allowed to be opened by changing `true` to `false` here: `<SingleInstance>true</SingleInstance>`.
 
