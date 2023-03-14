@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon />
-    <StartupObject />
+    <ApplicationIcon>Media\all_logos_05.ico</ApplicationIcon>
+    <StartupObject></StartupObject>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <PackageId>MetaParser</PackageId>
     <Authors>Stanislav Demchenko</Authors>
@@ -28,10 +28,31 @@
      See: https://learn.microsoft.com/en-us/dotnet/standard/assembly/reference-assemblies
      -->
      <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+     <PackageIcon>all_logos_05.ico</PackageIcon>
+     <PackageIconUrl />
 </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Media\all_logos_05.ico">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

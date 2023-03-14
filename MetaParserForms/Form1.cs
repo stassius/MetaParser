@@ -1,31 +1,51 @@
 ﻿using MetadataExtractor;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace MetaParserForms
 {
+   
     public partial class Form1 : Form
     {
+        const string SCREEN_CONFIG_FILE = "window.cfg";
+        const string CONFIG_FILE = "app.cfg";
         protected static string CurrentFile;
+        private string _screenConfigFile;
+        private string _appConfigFile;
+
+        public class WindowSettings
+        {
+            public Rectangle DesktopBounds;
+            public bool Maximized;
+            public bool Minimized;
+        }
+
+        public class AppSettings
+        {
+            public bool SingleInstance;
+            public string BGColor1;
+            public string BGColor2;
+            public string TextColor;
+            public string SelectionColor;
+        }
+
         public Form1()
         {
-
+            _screenConfigFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), SCREEN_CONFIG_FILE);
+            _appConfigFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), CONFIG_FILE);
             InitializeComponent();
-            TopMost = true;
-            KeyPreview = true;
-            dataGridView1.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
-            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridView1.ShowCellToolTips = false;
-            this.AllowDrop = true;
-            this.DragEnter += new DragEventHandler(Form1_DragEnter);
-            this.DragDrop += new DragEventHandler(Form1_DragDrop);
-            this.KeyDown += new KeyEventHandler(Form1_KeyDown);
+            ReadConfig();
+            LoadWindowPosition();
+            SetupDataView();
+            SetupWindowProperties();
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -38,6 +58,62 @@ namespace MetaParserForms
                 }
             }
             L_copy.SendToBack();
+        }
+
+        private void SetupWindowProperties()
+        {
+            TopMost = true;
+            KeyPreview = true;
+            this.AllowDrop = true;
+            this.DragEnter += new DragEventHandler(Form1_DragEnter);
+            this.DragDrop += new DragEventHandler(Form1_DragDrop);
+            this.KeyDown += new KeyEventHandler(Form1_KeyDown);
+            this.FormClosing += new FormClosingEventHandler(OnFormClosing);
+        }
+
+        private void SetupDataView()
+        {
+            dataGridView1.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.ShowCellToolTips = false;
+        }
+
+        private void ReadConfig()
+        {
+            if (File.Exists(_appConfigFile) == false)
+            {
+                CreateConfig();
+            }
+            AppSettings appSettings = ReadFromXmlFile<AppSettings>(_appConfigFile);
+            if (appSettings.SingleInstance)
+            { 
+                Process currentProcess = Process.GetCurrentProcess();
+                Process[] pname = Process.GetProcessesByName(currentProcess.ProcessName);
+                if (pname.Length > 1)
+                {
+                    pname.Where(p => p.Id != Process.GetCurrentProcess().Id)?.First().Kill();
+                }
+            }
+            dataGridView1.DefaultCellStyle.ForeColor = ColorTranslator.FromHtml(appSettings.TextColor);
+            dataGridView1.DefaultCellStyle.BackColor = ColorTranslator.FromHtml(appSettings.BGColor1);
+            dataGridView1.DefaultCellStyle.SelectionBackColor = ColorTranslator.FromHtml(appSettings.SelectionColor);
+            dataGridView1.BackgroundColor = dataGridView1.DefaultCellStyle.BackColor;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = ColorTranslator.FromHtml(appSettings.BGColor2);
+            dataGridView1.AlternatingRowsDefaultCellStyle.SelectionBackColor = ColorTranslator.FromHtml(appSettings.SelectionColor);
+            BackColor =  dataGridView1.DefaultCellStyle.BackColor;
+            ForeColor = ColorTranslator.FromHtml(appSettings.TextColor);
+        }
+
+        private void CreateConfig()
+        {
+            AppSettings appSettings = new AppSettings();
+            appSettings.SingleInstance = true;
+            appSettings.TextColor = "#FFFFFF";
+            appSettings.BGColor1 = "#101010";
+            appSettings.BGColor2 = "#202020";
+            appSettings.SelectionColor = "#2176a2";
+            WriteToXmlFile<AppSettings>(_appConfigFile, appSettings);
         }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -75,10 +151,13 @@ namespace MetaParserForms
             else
             {
                  prompt = GetInbetweenString(tag.Description, "parameters:", "Steps:").Trim();
-                negPrompt = " "; 
+                 negPrompt = " "; 
             }
-            dataGridView1.Rows.Add("Prompt", prompt);
-            dataGridView1.Rows.Add("Negative prompt", negPrompt);
+            if (string.IsNullOrWhiteSpace(prompt) == false || string.IsNullOrWhiteSpace(negPrompt) == false)
+            {
+                dataGridView1.Rows.Add("Prompt", prompt);
+                dataGridView1.Rows.Add("Negative prompt", negPrompt);
+            }
 
             string rest = tag.Description.Substring(tag.Description.IndexOf("Steps:"));
             foreach(string unit in rest.Split(","))
@@ -135,6 +214,75 @@ namespace MetaParserForms
             await Task.Delay((int)duration);
             label.SendToBack();
             _currentlyFlashing = false;
+        }
+
+        private void OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveWindowPosition();
+        }
+
+        
+
+        private void LoadWindowPosition()
+        {
+            if (File.Exists(_screenConfigFile) == false) return;
+            WindowSettings windowSettings = ReadFromXmlFile<WindowSettings>(_screenConfigFile);
+
+            this.StartPosition = FormStartPosition.Manual;
+
+            if (windowSettings.Maximized)
+            {
+                WindowState = FormWindowState.Maximized;
+                this.DesktopBounds = windowSettings.DesktopBounds;
+            }
+            else if (windowSettings.Minimized)
+            {
+                WindowState = FormWindowState.Minimized;
+            }
+            else
+            {
+                this.DesktopBounds = windowSettings.DesktopBounds;
+            }
+        }
+        private void SaveWindowPosition()
+        {
+            WindowSettings windowSettings = new WindowSettings();
+            windowSettings.DesktopBounds = this.DesktopBounds;
+            windowSettings.Minimized = WindowState == FormWindowState.Minimized;
+            windowSettings.Maximized = WindowState == FormWindowState.Maximized;
+            WriteToXmlFile<WindowSettings>(_screenConfigFile, windowSettings);
+        }
+
+        public static void WriteToXmlFile<T>(string filePath, T objectToWrite, bool append = false) where T : new()
+        {
+            TextWriter writer = null;
+            try
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                writer = new StreamWriter(filePath, append);
+                serializer.Serialize(writer, objectToWrite);
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
+            }
+        }
+
+        public static T ReadFromXmlFile<T>(string filePath) where T : new()
+        {
+            TextReader reader = null;
+            try
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                reader = new StreamReader(filePath);
+                return (T)serializer.Deserialize(reader);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
         }
 
     }
