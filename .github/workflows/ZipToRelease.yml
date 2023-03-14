@@ -27,4 +27,5 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ matrix.artifact_name }}
         asset_name: ${{ matrix.asset_name }}
+        tag: Release
 
