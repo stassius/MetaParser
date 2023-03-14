@@ -128,6 +128,7 @@ namespace MetaParserForms
             Parse();
         }
 
+
         private void Parse()
         {
             if (File.Exists(CurrentFile) == false)
@@ -137,6 +138,11 @@ namespace MetaParserForms
             }
             dataGridView1.Rows.Clear();
             Image image = new Bitmap(CurrentFile);
+            ParseBitMap(image);
+        }
+
+        private void ParseBitMap(Image image)
+        {
             PropertyItem[] propItems = image.PropertyItems;
 
             var directories = ImageMetadataReader.ReadMetadata(CurrentFile);
@@ -145,13 +151,13 @@ namespace MetaParserForms
             string prompt, negPrompt;
             if (tag.Description.Contains("Negative prompt:"))
             {
-                 prompt = GetInbetweenString(tag.Description, "parameters:", "Negative prompt:").Trim();
-                 negPrompt = GetInbetweenString(tag.Description, "Negative prompt:", "Steps:").Trim();
+                prompt = GetInbetweenString(tag.Description, "parameters:", "Negative prompt:").Trim();
+                negPrompt = GetInbetweenString(tag.Description, "Negative prompt:", "Steps:").Trim();
             }
             else
             {
-                 prompt = GetInbetweenString(tag.Description, "parameters:", "Steps:").Trim();
-                 negPrompt = " "; 
+                prompt = GetInbetweenString(tag.Description, "parameters:", "Steps:").Trim();
+                negPrompt = " ";
             }
             if (string.IsNullOrWhiteSpace(prompt) == false || string.IsNullOrWhiteSpace(negPrompt) == false)
             {
@@ -160,7 +166,7 @@ namespace MetaParserForms
             }
 
             string rest = tag.Description.Substring(tag.Description.IndexOf("Steps:"));
-            foreach(string unit in rest.Split(","))
+            foreach (string unit in rest.Split(","))
             {
                 var argName = unit.Split(":")[0].Trim();
                 var value = unit.Split(":")[1].Trim();
@@ -175,7 +181,6 @@ namespace MetaParserForms
                 }
             }
         }
-
         private string GetInbetweenString(string str, string first, string last)
         {
             int pFrom = str.IndexOf(first) + first.Length;
@@ -201,6 +206,37 @@ namespace MetaParserForms
             if (e.KeyCode == Keys.Escape)
             {
                 Application.Exit();
+            }
+
+            if (e.Control && e.KeyCode == Keys.V)
+            {
+                Image image = Clipboard.GetImage();
+                if (image != null)
+                {
+                    ParseBitMap(image);
+                    return;
+                }
+                string fileName = string.Empty;
+
+                if (Clipboard.ContainsFileDropList())
+                {
+                    var filesArray = Clipboard.GetFileDropList();
+                    fileName = filesArray[0];
+                }
+                else if (Clipboard.ContainsText())
+                {
+                    fileName = Clipboard.GetText();
+                }
+                if (string.IsNullOrEmpty(fileName))
+                    return;
+                if (File.Exists(fileName))
+                {
+                    if (fileName.EndsWith(".png"))
+                    {
+                        CurrentFile = fileName;
+                        Parse();
+                    }
+                }
             }
         }
           
