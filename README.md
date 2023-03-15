@@ -2,7 +2,7 @@
 LightWeight windows application that shows Stable Diffusion metadata stored in images by Automatic1111 webui.
 You can drag and drop an image to the MetaParser or start the app with the name of an image file as a command line argument.
 
-![image](https://user-images.githubusercontent.com/35260274/225069254-02c4fc19-3b08-431b-b7e6-6ea7d006790e.png)
+![metaparset](https://user-images.githubusercontent.com/35260274/225275962-1eed06e2-db5a-4283-b7b3-651d33a5d74d.gif)
 
 Installation: Unzip and run.
 
