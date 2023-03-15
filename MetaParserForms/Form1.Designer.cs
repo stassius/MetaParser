@@ -73,7 +73,7 @@ namespace MetaParserForms
             this.dataGridView1.RowTemplate.Height = 25;
             this.dataGridView1.Size = new System.Drawing.Size(1348, 827);
             this.dataGridView1.TabIndex = 1;
-            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnCellContentClick);
             // 
             // Property
             // 
@@ -93,6 +93,7 @@ namespace MetaParserForms
             // 
             // L_copy
             // 
+            
             this.L_copy.AutoSize = true;
             this.L_copy.BackColor = System.Drawing.Color.SteelBlue;
             this.L_copy.Font = new System.Drawing.Font("Segoe UI", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
