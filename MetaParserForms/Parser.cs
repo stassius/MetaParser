@@ -79,7 +79,6 @@ namespace MetaParserForms
                 {
                     image.CopyTo(memoryStream);
                     imageBytes = memoryStream.ToArray();
-                    Console.WriteLine(imageBytes.Length);
                 }
 
                 if (imageBytes.Length <= 8)
@@ -99,7 +98,7 @@ namespace MetaParserForms
                     pointer += 4;
 
                     // chunk data -----
-                    if (chunkName.Equals("tEXt"))
+                    if (chunkName.Equals("tEXt") || chunkName.Equals("iTXt"))
                     {
                         byte[] data = new byte[chunkSize];
                         Array.Copy(imageBytes, pointer, data, 0, chunkSize);
@@ -109,7 +108,17 @@ namespace MetaParserForms
                             stringBuilder.Append((char)t);
                         }
 
-                        string[] pair = stringBuilder.ToString().Split(new char[] { '\0' });
+                        string[] pair;
+                        if (chunkName.Equals("iTXt"))
+                        {
+                            pair = stringBuilder.ToString().Split("\0\0\0\0\0");
+                            byte[] bytes = Encoding.Latin1.GetBytes(pair[1]);
+                            pair[1] = Encoding.UTF8.GetString(bytes);
+                        }
+                        else
+                        {
+                            pair = stringBuilder.ToString().Split(new char[] { '\0' });
+                        }
                         metadata[pair[0]] = pair[1];
                         Console.WriteLine(metadata[pair[0]]);
                     }
