@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            artifact_name: MetaParser.zip
+            artifact_name: Archive/MetaParser.zip
             asset_name: metaparser-windows-amd64.zip
 
     steps:
