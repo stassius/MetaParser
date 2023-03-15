@@ -10,7 +10,7 @@ Click on a row -> copy to clipboard.
 
 Escape -> Close the application.
 
-Ctrl+V -> Use the image from clipboard, both filename and the copied bitmap itself work.
+Ctrl+V -> Use the image path from clipboard.
 
 The app remembers the last screen position and size. If something went wrong and the app is off-screen, delete the `window.cfg` file and restart the app.
 
