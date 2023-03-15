@@ -32,11 +32,12 @@ namespace MetaParserForms
             SetUpConfigNames();
             InitializeComponent();
             ReadConfig();
+            IntPtr MenuHandle = GetSystemMenu(this.Handle, false);
+            InsertMenu(MenuHandle, 0, MF_BYPOSITION | MF_CHECKED, ALWAYSONTOPMENU, "Always On Top");
             LoadWindowPosition();
             SetupDataView();
             SetupWindowProperties();
             L_copy.SendToBack();
-            
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -47,9 +48,6 @@ namespace MetaParserForms
                     Parse(filename);
                 }
             }
-            IntPtr MenuHandle = GetSystemMenu(this.Handle, false);
-            InsertMenu(MenuHandle, 0, MF_BYPOSITION | MF_CHECKED, ALWAYSONTOPMENU, "Always On Top");
-
         }
 
         protected override void WndProc(ref Message msg)
@@ -60,10 +58,7 @@ namespace MetaParserForms
                 {
                     case ALWAYSONTOPMENU:
                         TopMost = !TopMost;
-                        IntPtr MenuHandle = GetSystemMenu(this.Handle, false);
-                        int value;
-                        value = TopMost ? MF_CHECKED : MF_UNCHECKED;
-                        CheckMenuItem(MenuHandle, ALWAYSONTOPMENU, value);
+                        CheckAlwaysOnTopMenuEntry();
                         return;
                    
                     default:
@@ -76,7 +71,6 @@ namespace MetaParserForms
 
         private void SetupWindowProperties()
         {
-            TopMost = true;
             KeyPreview = true;
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(OnDragEnter);

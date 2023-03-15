@@ -35,6 +35,9 @@
      <PackageIcon>all_logos_05.ico</PackageIcon>
      <PackageIconUrl />
 </PropertyGroup>
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <OutputPath>D:\My\_MetaParserForms\MetaParser\MetaParser\</OutputPath>
+</PropertyGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

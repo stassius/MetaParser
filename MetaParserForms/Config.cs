@@ -21,6 +21,7 @@ namespace MetaParserForms
             public Rectangle DesktopBounds;
             public bool Maximized;
             public bool Minimized;
+            public bool AlwaysOnTop;
         }
 
         public class AppSettings
@@ -78,7 +79,11 @@ namespace MetaParserForms
 
         private void LoadWindowPosition()
         {
-            if (File.Exists(_screenConfigFile) == false) return;
+            if (File.Exists(_screenConfigFile) == false)
+            {
+                TopMost = true;
+                return;
+            }
             WindowSettings windowSettings = ReadFromXmlFile<WindowSettings>(_screenConfigFile);
 
             this.StartPosition = FormStartPosition.Manual;
@@ -96,6 +101,8 @@ namespace MetaParserForms
             {
                 this.DesktopBounds = windowSettings.DesktopBounds;
             }
+            TopMost = windowSettings.AlwaysOnTop;
+            CheckAlwaysOnTopMenuEntry();
         }
         private void SaveWindowPosition()
         {
@@ -103,9 +110,17 @@ namespace MetaParserForms
             windowSettings.DesktopBounds = this.DesktopBounds;
             windowSettings.Minimized = WindowState == FormWindowState.Minimized;
             windowSettings.Maximized = WindowState == FormWindowState.Maximized;
+            windowSettings.AlwaysOnTop = TopMost;
             WriteToXmlFile<WindowSettings>(_screenConfigFile, windowSettings);
         }
 
+        private void CheckAlwaysOnTopMenuEntry()
+        {
+            IntPtr MenuHandle = GetSystemMenu(this.Handle, false);
+            int value;
+            value = TopMost ? MF_CHECKED : MF_UNCHECKED;
+            CheckMenuItem(MenuHandle, ALWAYSONTOPMENU, value);
+        }
 
         public static void WriteToXmlFile<T>(string filePath, T objectToWrite, bool append = false) where T : new()
         {
