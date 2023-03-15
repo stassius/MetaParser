@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace MetaParserForms
 {
@@ -11,6 +12,20 @@ namespace MetaParserForms
     {
         const string SCREEN_CONFIG_FILE = "window.cfg";
         const string CONFIG_FILE = "app.cfg";
+
+        public const Int32 WM_SYSCOMMAND = 0x112;
+        public const Int32 MF_BYPOSITION = 0x400;
+        private const int MF_CHECKED = 0x0008;
+        private const int MF_UNCHECKED = 0x0000;
+        public const Int32 ALWAYSONTOPMENU = 1000;
+        public const Int32 MUMENU2 = 1001;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+        [DllImport("user32.dll")]
+        private static extern bool InsertMenu(IntPtr hMenu, Int32 wPosition, Int32 wFlags, Int32 wIDNewItem, string lpNewItem);
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int CheckMenuItem(IntPtr hMenu, int uIDCheckItem, int uCheck);
 
         public Form1()
         {
@@ -21,6 +36,7 @@ namespace MetaParserForms
             SetupDataView();
             SetupWindowProperties();
             L_copy.SendToBack();
+            
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -31,7 +47,32 @@ namespace MetaParserForms
                     Parse(filename);
                 }
             }
+            IntPtr MenuHandle = GetSystemMenu(this.Handle, false);
+            InsertMenu(MenuHandle, 0, MF_BYPOSITION | MF_CHECKED, ALWAYSONTOPMENU, "Always On Top");
+
         }
+
+        protected override void WndProc(ref Message msg)
+        {
+            if (msg.Msg == WM_SYSCOMMAND)
+            {
+                switch (msg.WParam.ToInt32())
+                {
+                    case ALWAYSONTOPMENU:
+                        TopMost = !TopMost;
+                        IntPtr MenuHandle = GetSystemMenu(this.Handle, false);
+                        int value;
+                        value = TopMost ? MF_CHECKED : MF_UNCHECKED;
+                        CheckMenuItem(MenuHandle, ALWAYSONTOPMENU, value);
+                        return;
+                   
+                    default:
+                        break;
+                }
+            }
+            base.WndProc(ref msg);
+        }
+
 
         private void SetupWindowProperties()
         {
@@ -163,6 +204,7 @@ namespace MetaParserForms
         {
             SaveWindowPosition();
         }
+
     }
 }
 
