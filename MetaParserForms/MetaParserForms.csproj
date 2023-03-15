@@ -17,11 +17,15 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>D:\My\_MetaParserForms\MetaParser\BUILD\</OutputPath>
+    <OutputPath>D:\My\_MetaParserForms\MetaParser\MetaParser\</OutputPath>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
-
+  
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
 <PropertyGroup>
      <!-- 
      Turns off reference assembly generation 
@@ -31,10 +35,6 @@
      <PackageIcon>all_logos_05.ico</PackageIcon>
      <PackageIconUrl />
 </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MetadataExtractor" Version="2.7.2" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
@@ -56,7 +56,11 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call &quot;$(SolutionDir)zip.bat&quot; &quot;$(TargetDir)&quot; &quot;$(SolutionDir)MetaParser.zip&quot;" />
+    <Exec Command="call &quot;$(SolutionDir)zip.bat&quot; &quot;$(TargetDir)&quot; &quot;$(SolutionDir)/Archive/MetaParser.zip&quot;" />
+  </Target>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="call &quot;$(SolutionDir)ClearBuildFolder.bat&quot; &quot;$(OutDir)&quot;&#xD;&#xA;call &quot;$(SolutionDir)ClearBuildFolder.bat&quot; &quot;$(SolutionDir)/Archive/&quot;" />
   </Target>
 
 </Project>
