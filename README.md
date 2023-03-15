@@ -22,8 +22,11 @@ Run, D:\Soft\MetaParser\MetaParser.exe "%clipboard%"
 
 ### Instruction:
 Click on a row -> copy to clipboard.
+
 Escape -> Close the application.
+
 Ctrl+V -> Use the image path from clipboard.
+
 
 The app remembers the last screen position and size. If something went wrong and the app is off-screen, delete the `window.cfg` file and restart the app.
 
