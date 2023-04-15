@@ -35,10 +35,12 @@ namespace MetaParserForms
             }
 
             string rest = tag.Substring(tag.IndexOf("Steps:"));
-            foreach (string unit in rest.Split(","))
+            foreach (string unit in rest.Split(new Char[] { ',', '\n' }))
             {
-                var argName = unit.Split(":")[0].Trim();
-                var value = unit.Split(":")[1].Trim();
+                var part = unit.Split(":");
+                if (part.Length < 2) continue;
+                var argName =part[0].Trim();
+                var value = part[1].Trim();
                 if (argName == "Size")
                 {
                     result.Add("Width", value.Split("x")[0]);
