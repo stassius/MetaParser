@@ -12,6 +12,7 @@ namespace MetaParserForms
 {
     static class Parser
     {
+        static private List<string> BLACKLIST = new List<string>(){ "Template" };
         static public Dictionary<string, string> ParseBitMap(Stream image)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
@@ -55,6 +56,7 @@ namespace MetaParserForms
                 if (part.Length < 2) continue;
                 var argName =part[0].Trim();
                 var value = part[1].Trim();
+                if (BLACKLIST.Contains(argName.Trim())) continue;
                 if (argName == "Size")
                 {
                     result.Add("Width", value.Split("x")[0]);
@@ -87,7 +89,6 @@ namespace MetaParserForms
             stream.Position = 0;
             return stream;
         }
-
 
         public static Hashtable GetMetaData(Stream image)
         {
@@ -169,6 +170,5 @@ namespace MetaParserForms
             return builder.ToString();
 
         }
-        
     }
 }
