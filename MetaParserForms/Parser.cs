@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MetaParserForms
 {
@@ -35,6 +38,17 @@ namespace MetaParserForms
             }
 
             string rest = tag.Substring(tag.IndexOf("Steps:"));
+
+            var reg = new Regex("\".*?\"");
+            var matches = reg.Matches(rest);
+            List<string> quoted = new List<string>();
+            foreach (var item in matches)
+            {
+                string str = item.ToString();
+                quoted.Add(str);
+                rest = rest.Replace(str, "@#$" + (quoted.Count - 1).ToString());
+            }
+            
             foreach (string unit in rest.Split(new Char[] { ',', '\n' }))
             {
                 var part = unit.Split(":");
@@ -48,7 +62,12 @@ namespace MetaParserForms
                 }
                 else
                 {
-                    result.Add(argName, value);
+                    string expandedValue = value;
+                    for(int i=0; i<quoted.Count; i++)
+                    {
+                        expandedValue = expandedValue.Replace("@#$" + i.ToString(), quoted[i]).Trim('\"');
+                    }
+                    result.Add(argName, expandedValue);
                 }
             }
             return result;
